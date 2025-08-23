@@ -1,0 +1,132 @@
+const AWS = require("aws-sdk");
+const https = require("https");
+const agent = new https.Agent({ keepAlive: true });
+const dbVariables = require("../config/dbConfig");
+
+exports.establishConnection = () => {
+  try {
+    const documentClient = new AWS.DynamoDB.DocumentClient({
+      region: dbVariables.configuration.region,
+      httpOptions: { agent },
+    });
+
+    console.log("✅ Connection with database established successfully.");
+
+    return documentClient;
+  } catch (err) {
+    console.error("❌ Error in establishing connection with database.", err);
+    throw err;
+  }
+};
+
+exports.closeConnection = () => {
+  try {
+    console.log(
+      `Connection closed with database.`
+    );
+    agent.destroy();
+  } catch (err) {
+    console.error("❌ Error in closing connection with database.", err);
+    throw err;
+  }
+};
+
+exports.putFunction = async (
+  tableName,
+  item,
+  documentClient = null
+) => {
+  const docClient = documentClient || this.establishConnection();
+  var data;
+
+  try {
+    const scanData = {
+      TableName: tableName,
+      Item: item,
+      ReturnConsumedCapacity: "TOTAL",
+    };
+
+    data = await docClient.put(scanData).promise();
+    console.log("ConsumedCapacityWrite: putFunction ", data.ConsumedCapacity);
+  } catch (error) {
+    console.error("❌ Error in putFunction: ", error);
+    throw error;
+  }
+};
+
+exports.deleteItemByKey = async (tableName, key, documentClient = null) => {
+  const docClient = documentClient || this.establishConnection();
+  const params = {
+    TableName: tableName,
+    Key: key, // Pass the key directly
+    ReturnConsumedCapacity: "TOTAL",
+  };
+
+  try {
+    console.log("Params: ", params);
+    const data = await docClient.delete(params).promise();
+    console.log(
+      "ConsumedCapacityWrite: deleteItemByKey ",
+      data.ConsumedCapacity
+    );
+  } catch (error) {
+    console.error("Error deleting item from DynamoDB:", error);
+    throw error;
+  }
+};
+
+exports.getItemByKey = async (
+  tableName,
+  key,
+  documentClient = null,
+  logLevel
+) => {
+  const docClient = documentClient || this.establishConnection();
+  const params = {
+    TableName: tableName,
+    Key: key,
+    ReturnConsumedCapacity: "INDEXES", // Add ReturnConsumedCapacity parameter
+  };
+  try {
+    const data = await docClient.get(params).promise();
+    console.log("GET data ==>", data);
+    
+    return data.Item;
+  } catch (error) {
+      console.error("Error getting item from DynamoDB:", error);
+    
+    throw error;
+  }
+};
+
+exports.queryFunction = async (
+  tableName,
+  keyConditionExpression,
+  expressionAttributeValues,
+  indexName = null,
+  documentClient = null
+) => {
+  try {
+    const docClient = documentClient || this.establishConnection();
+
+    const params = {
+      TableName: tableName,
+      KeyConditionExpression: keyConditionExpression,
+      ExpressionAttributeValues: expressionAttributeValues,
+      ReturnConsumedCapacity: "INDEXES",
+    };
+
+    if (indexName) {
+      params.IndexName = indexName; // ✅ add GSI if provided
+    }
+
+    const data = await docClient.query(params).promise();
+
+    console.log("ConsumedCapacityRead: queryFunction", data.ConsumedCapacity);
+
+    return data.Items;
+  } catch (error) {
+    console.error("❌ Error in queryFunction:", error);
+    throw error;
+  }
+};

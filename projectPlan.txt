@@ -1,0 +1,37 @@
+smart-workspace-manager/
+│── src/
+│   ├── app.js             # Express App Entry
+│   ├── config/
+│   │   ├── db.js          # DB connection
+│   │   └── index.js
+│   ├── models/
+│   │   ├── user.model.js
+│   │   ├── workspace.model.js
+│   ├── routes/
+│   │   ├── auth.routes.js
+│   │   ├── workspace.routes.js
+│   │   └── index.js
+│   ├── controllers/
+│   │   ├── auth.controller.js
+│   │   ├── workspace.controller.js
+│   ├── services/
+│   │   ├── auth.service.js
+│   │   ├── workspace.service.js
+│   ├── middleware/
+│   │   ├── auth.js
+│   │   └── errorHandler.js
+│   ├── utils/
+│   │   ├── jwt.js
+│   │   ├── csvHelper.js
+│   │   └── validators.js
+│   └── server.js          # Start server
+│
+│── tests/
+│   ├── auth.test.js
+│   ├── workspace.test.js
+│
+│── migrations/            # Sequelize migrations (if SQL)
+│── package.json
+│── README.md
+│── .gitignore
+│── .env.example

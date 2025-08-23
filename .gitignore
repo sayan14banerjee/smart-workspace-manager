@@ -1,0 +1,15 @@
+.env
+package-lock.json
+node_modules/
+package.json
+# Terraform directories and files
+.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
+override.tf
+override.tf.json
+*.tfvars # optional: ignore if contains secrets
+
+# Optional: local override files
+*.tfvars.local

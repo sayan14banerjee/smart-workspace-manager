@@ -1,0 +1,26 @@
+        ┌──────────────┐
+        │   Client UI  │
+        │  (Web/Mobile)│
+        └──────┬───────┘
+               │ HTTP (REST API)
+        ┌──────▼───────┐
+        │  Express API │
+        │ (Node.js App)│
+        └──────┬───────┘
+   ┌───────────┼───────────────┐
+   │           │               │
+┌──▼──┐   ┌────▼─────┐    ┌────▼─────┐
+│Auth │   │Workspace │    │Export/   │
+│Ctrl │   │Ctrl      │    │Import    │
+└───┬─┘   └────┬─────┘    └────┬─────┘
+    │          │               │
+    ▼          ▼               ▼
+ JWT Utils   DB Models     CSV/JSON Utils
+ (Sign/Verify)   (User, Workspace)
+
+             │
+             ▼
+     ┌───────────────┐
+     │ Database      │
+     │ MySQL / Dynamo│
+     └───────────────┘
