@@ -1,3 +1,12 @@
+service: user
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-south-1
+  environment:
+    USERS_TABLE: usersTable-${sls:stage}
+
 resources:
   Resources:
     UsersDynamoDbTable:
@@ -13,7 +22,6 @@ resources:
           - AttributeName: userId
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
-
         GlobalSecondaryIndexes:
           - IndexName: emailId-Index
             KeySchema:
@@ -21,3 +29,28 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
+
+functions:
+  createUser:
+    handler: createUser.createUser
+    events:
+      - http:
+          path: user/createUser
+          method: post
+          cors: true
+
+  updateUser:
+    handler: updateUser.updateUser
+    events:
+      - http:
+          path: user/updateUser
+          method: post
+          cors: true
+
+  deleteUser:
+    handler: deleteUser.deleteUser
+    events:
+      - http:
+          path: user/deleteUser
+          method: post
+          cors: true
